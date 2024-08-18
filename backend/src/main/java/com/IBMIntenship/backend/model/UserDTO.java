@@ -35,13 +35,12 @@ public class UserDTO {
 
     @NotBlank(message = "this field can not be blank")
     @Size(min = 8, max = 64)
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Boolean isApproved;
 
-    @Pattern(regexp = "TECHNICIAN|EMPLOYEE|ADMIN", message = "Role must be TECHNICIAN, EMPLOYEE, or ADMIN")
+    @Pattern(regexp = "TECHNICIAN|EMPLOYEE", message = "Role must be TECHNICIAN, EMPLOYEE, or ADMIN")
     @NotBlank
     private String role;
 

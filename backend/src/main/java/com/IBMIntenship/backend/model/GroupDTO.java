@@ -11,6 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GroupDTO {
+
     private Long groupId;
     private String groupName;
     private String groupDescription;
