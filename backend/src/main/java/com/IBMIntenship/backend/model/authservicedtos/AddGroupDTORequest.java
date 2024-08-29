@@ -1,4 +1,4 @@
-package com.IBMIntenship.backend.model;
+package com.IBMIntenship.backend.model.authservicedtos;
 
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;

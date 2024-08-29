@@ -1,4 +1,4 @@
-package com.IBMIntenship.backend.model;
+package com.IBMIntenship.backend.model.authservicedtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;

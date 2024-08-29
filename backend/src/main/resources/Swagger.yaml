@@ -1,0 +1,482 @@
+openapi: 3.0.1
+info:
+  title: Backend API
+  description: API documentation for the backend service for EasyTicket application.
+  version: 0.0.1
+servers:
+  - url: http://localhost:8081
+    description: Local development server
+
+paths:
+  /api/user/update/{id}:
+    put:
+      tags:
+        - user-controller
+      operationId: updateUser
+      summary: Update user information
+      description: Updates the information of an existing user by their ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the user to update.
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: The updated user information.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDTO'
+        required: true
+      responses:
+        '200':
+          description: Successfully updated the user information.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDTO'
+
+  /api/admin/groups/{groupId}/add/{technicianId}:
+    put:
+      tags:
+        - admin-controller
+      operationId: addTechnicianToGroup
+      summary: Add a technician to a group
+      description: Associates a technician with an existing group by their IDs.
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          description: The ID of the group to add the technician to.
+          schema:
+            type: integer
+            format: int64
+        - name: technicianId
+          in: path
+          required: true
+          description: The ID of the technician to add to the group.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Technician successfully added to the group.
+          content:
+            application/json:
+              schema:
+                type: string
+
+  /api/admin/disable/{id}:
+    put:
+      tags:
+        - admin-controller
+      operationId: disableUser
+      summary: Disable a user account
+      description: Disables a user account by setting the `isApproved` status to `false`.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the user to disable.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successfully disabled the user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDTO'
+
+  /api/admin/approve/{id}:
+    put:
+      tags:
+        - admin-controller
+      operationId: approveUser
+      summary: Approve a user account
+      description: Approves a user account by setting the `isApproved` status to `true`.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the user to approve.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successfully approved the user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDTO'
+
+  /api/group/add:
+    post:
+      tags:
+        - group-controller
+      operationId: addGroup
+      summary: Create a new group
+      description: Creates a new group with the specified details.
+      requestBody:
+        description: The details of the group to create.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddGroupDTORequest'
+        required: true
+      responses:
+        '200':
+          description: Group successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupDTO'
+
+  /api/auth/register:
+    post:
+      tags:
+        - auth-controller
+      operationId: register
+      summary: Register a new user
+      description: Registers a new user in the system.
+      requestBody:
+        description: The user details to register.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDTO'
+        required: true
+      responses:
+        '200':
+          description: User successfully registered.
+          content:
+            application/json:
+              schema:
+                type: string
+
+  /api/auth/login:
+    post:
+      tags:
+        - auth-controller
+      operationId: login
+      summary: User login
+      description: Authenticates a user and returns a token if successful.
+      requestBody:
+        description: The login credentials.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthenticationRequest'
+        required: true
+      responses:
+        '200':
+          description: Login successful. Returns an authentication token.
+          content:
+            application/json:
+              schema:
+                type: string
+
+  /api/user/{id}:
+    get:
+      tags:
+        - user-controller
+      operationId: getUserById
+      summary: Get user by ID
+      description: Retrieves the details of a user by their ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the user to retrieve.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successfully retrieved the user details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDTO'
+
+  /api/user/all:
+    get:
+      tags:
+        - user-controller
+      operationId: getAllUsers
+      summary: Get all users
+      description: Retrieves a list of all users in the system.
+      responses:
+        '200':
+          description: Successfully retrieved all users.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserDTO'
+
+  /api/technician/all:
+    get:
+      tags:
+        - technician-controller
+      operationId: getAllTechnicians
+      summary: Get all technicians
+      description: Retrieves a list of all technicians in the system.
+      responses:
+        '200':
+          description: Successfully retrieved all technicians.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TechnicianDTOResponse'
+
+  /api/group/{id}:
+    get:
+      tags:
+        - group-controller
+      operationId: getGroupById
+      summary: Get group by ID
+      description: Retrieves the details of a group by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the group to retrieve.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successfully retrieved the group details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupDTO'
+
+  /api/group/{id}/technicians:
+    get:
+      tags:
+        - group-controller
+      operationId: getTechniciansByGroupId
+      summary: Get technicians by group ID
+      description: Retrieves a list of technicians associated with a specific group.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the group whose technicians to retrieve.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successfully retrieved the list of technicians.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TechnicianDTOResponse'
+
+  /api/group/all:
+    get:
+      tags:
+        - group-controller
+      operationId: getAllGroups
+      summary: Get all groups
+      description: Retrieves a list of all groups in the system.
+      responses:
+        '200':
+          description: Successfully retrieved all groups.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GroupDTO'
+
+  /api/employee/all:
+    get:
+      tags:
+        - employee-controller
+      operationId: getAllEmployees
+      summary: Get all employees
+      description: Retrieves a list of all employees in the system.
+      responses:
+        '200':
+          description: Successfully retrieved all employees.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserDTO'
+
+  /api/user/delete/{id}:
+    delete:
+      tags:
+        - user-controller
+      operationId: deleteUser
+      summary: Delete user
+      description: Deletes a user by their ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the user to delete.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successfully deleted the user.
+          content:
+            application/json:
+              schema:
+                type: string
+
+  /api/group/delete/{id}:
+    delete:
+      tags:
+        - group-controller
+      operationId: deleteGroup
+      summary: Delete group
+      description: Deletes a group by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the group to delete.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successfully deleted the group.
+          content:
+            application/json:
+              schema:
+                type: string
+
+components:
+  schemas:
+    UserDTO:
+      required:
+        - email
+        - firstName
+        - lastName
+        - password
+        - phone
+        - role
+      type: object
+      properties:
+        firstName:
+          maxLength: 50
+          minLength: 2
+          pattern: ^[a-zA-Z\s-]+$
+          type: string
+          description: The user's first name.
+        lastName:
+          maxLength: 50
+          minLength: 2
+          pattern: ^[a-zA-Z\s-]+$
+          type: string
+          description: The user's last name.
+        email:
+          maxLength: 100
+          minLength: 0
+          type: string
+          description: The user's email address.
+        phone:
+          pattern: ^\d{10}$
+          type: string
+          description: The user's phone number, must be 10 digits.
+        password:
+          maxLength: 64
+          minLength: 8
+          type: string
+          description: The user's password, must be between 8 and 64 characters.
+        isApproved:
+          type: boolean
+          readOnly: true
+          description: Indicates whether the user account is approved.
+        role:
+          pattern: TECHNICIAN|EMPLOYEE
+          type: string
+          description: The role of the user, either 'TECHNICIAN' or 'EMPLOYEE'.
+
+    AddGroupDTORequest:
+      type: object
+      properties:
+        groupName:
+          maxLength: 50
+          minLength: 1
+          type: string
+          description: The name of the group.
+        groupDescription:
+          maxLength: 10000
+          minLength: 1
+          type: string
+          description: A brief description of the group.
+
+    GroupDTO:
+      type: object
+      properties:
+        groupId:
+          type: integer
+          format: int64
+          description: The unique identifier for the group.
+        groupName:
+          type: string
+          description: The name of the group.
+        groupDescription:
+          type: string
+          description: A brief description of the group.
+        technicianDTOResponseList:
+          type: array
+          description: A list of technicians associated with the group.
+          items:
+            $ref: '#/components/schemas/TechnicianDTOResponse'
+
+    TechnicianDTOResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: The unique identifier for the technician.
+        firstName:
+          type: string
+          description: The technician's first name.
+        lastName:
+          type: string
+          description: The technician's last name.
+        email:
+          type: string
+          description: The technician's email address.
+        phone:
+          type: string
+          description: The technician's phone number.
+        isApproved:
+          type: boolean
+          description: Indicates whether the technician is approved.
+        groupId:
+          type: string
+          description: The identifier of the group the technician belongs to.
+
+    AuthenticationRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          description: The username for authentication.
+        password:
+          type: string
+          description: The password for authentication.

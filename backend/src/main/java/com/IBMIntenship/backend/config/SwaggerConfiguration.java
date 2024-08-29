@@ -12,9 +12,9 @@ public class SwaggerConfiguration {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Main EasyTicket User Authentication API")
+                        .title("Backend  API")
                         .version("0.0.1")
-                        .description("API documentation for the Authenticaiton service for EasyTicket application"));
+                        .description("API documentation for the backend service for EasyTicket application"));
     }
 }
 
