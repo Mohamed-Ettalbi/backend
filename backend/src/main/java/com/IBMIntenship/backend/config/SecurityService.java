@@ -2,9 +2,12 @@ package com.IBMIntenship.backend.config;
 
 import com.IBMIntenship.backend.config.FeignConfig;
 import com.IBMIntenship.backend.config.UserDetailsFromToken;
+import com.IBMIntenship.backend.service.ticketservices.TicketService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +15,8 @@ import java.util.List;
 
 @Service
 public class SecurityService {
+    private static final Logger logger = LoggerFactory.getLogger(TicketService.class);
+
 
     @Autowired
     private FeignConfig feignConfig;
@@ -21,12 +26,14 @@ public class SecurityService {
     public boolean validateTokenAndRole(String requiredRole) {
         String token = feignConfig.getJwtToken();
         if (token == null || !validateToken(token)) {
+            logger.error("Invalid or expired token");
             throw new RuntimeException("Invalid or expired token");
         }
 
         UserDetailsFromToken userDetails = getUserDetailsFromToken(token);
         if (userDetails.getRoles() == null || !userDetails.getRoles().contains(requiredRole)) {
-            throw new RuntimeException("Access denied: Insufficient permissions");
+            logger.error("Access denied: Insufficient permissions, required role: {}, roles from token: {}", requiredRole, userDetails.getRoles());
+        return false;
         }
         return true;
     }

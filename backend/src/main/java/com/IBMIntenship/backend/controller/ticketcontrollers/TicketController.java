@@ -31,10 +31,17 @@ public class TicketController {
         return ResponseEntity.ok(updatedTicket);
     }
 
-    @GetMapping
-    public ResponseEntity<List<TicketDTO>> getAllTickets() {
-        // Use service layer if additional logic is needed
-        List<TicketDTO> tickets = ticketService.getAllTickets();
+    @GetMapping("/all")
+    public ResponseEntity<List<TicketDTO>> getAllTickets(@RequestParam(value = "email", required = false) String email) {
+
+        List<TicketDTO> tickets;
+        if (email != null) {
+
+            tickets = ticketService.getTicketsByUserEmail(email);
+        } else {
+            // Logic to get all tickets
+            tickets = ticketService.getAllTickets();
+        }
         return ResponseEntity.ok(tickets);
     }
 

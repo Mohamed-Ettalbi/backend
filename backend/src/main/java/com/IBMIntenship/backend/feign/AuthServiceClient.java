@@ -26,6 +26,7 @@ public interface AuthServiceClient {
             @GetMapping("/api/user/all")
             List<UserDTO> getAllUsers();
 
+
    // Group-related endpoints
             @GetMapping("/api/group/{id}")
             GroupDTO getGroupById(@PathVariable Long id);
@@ -66,7 +67,12 @@ public interface AuthServiceClient {
             @GetMapping("/api/technician/all")
             List<TechnicianDTOResponse> getAllTechnicians();
 
-            // Employee-related endpoints
+
+            @GetMapping("/api/technician")
+            TechnicianDTOResponse getTechnicianByEmail(@RequestParam("email") String email);
+
+
+    // Employee-related endpoints
             @PostMapping("/api/employee/add")
             UserDTO addEmployee(@RequestBody UserDTO employeeDTO);
 
