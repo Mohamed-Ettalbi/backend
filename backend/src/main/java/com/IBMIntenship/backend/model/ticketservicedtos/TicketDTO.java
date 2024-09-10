@@ -18,7 +18,7 @@ public class TicketDTO {
     private TicketStatusEnum status;
     private TicketPriorityEnum priority;
     private String ticketCategoryName;
-    private Long assignedTo;
+    private String assignedTo;
     private Long assignedGroup;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

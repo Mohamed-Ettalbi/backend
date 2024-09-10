@@ -2,6 +2,7 @@ package com.IBMIntenship.backend.controller.ticketcontrollers;
 
 
 
+import com.IBMIntenship.backend.model.ticketservicedtos.CommentBody;
 import com.IBMIntenship.backend.model.ticketservicedtos.CommentDTO;
 import com.IBMIntenship.backend.service.ticketservices.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +25,8 @@ public class CommentController {
     }
 
     @PostMapping("/{ticketId}")
-    public ResponseEntity<CommentDTO> addCommentToTicket(@PathVariable("ticketId") Long ticketId, @RequestBody String message) {
-        CommentDTO newComment = commentService.addCommentToTicket(ticketId, message);
+    public ResponseEntity<CommentDTO> addCommentToTicket(@PathVariable("ticketId") Long ticketId, @RequestBody CommentBody commentBody) {
+        CommentDTO newComment = commentService.addCommentToTicket(ticketId, commentBody);
         return ResponseEntity.ok(newComment);
     }
 

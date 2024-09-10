@@ -3,13 +3,16 @@ package com.IBMIntenship.backend.service.ticketservices;
 import com.IBMIntenship.backend.config.CorsConfig;
 import com.IBMIntenship.backend.config.FeignConfig;
 import com.IBMIntenship.backend.config.SecurityService;
+import com.IBMIntenship.backend.exceptions.UnauthorizedAccessException;
 import com.IBMIntenship.backend.feign.AuthServiceClient;
 import com.IBMIntenship.backend.feign.TicketServiceClient;
 import com.IBMIntenship.backend.model.authservicedtos.TechnicianDTOResponse;
 import com.IBMIntenship.backend.model.authservicedtos.UserDTO;
 import com.IBMIntenship.backend.model.ticketservicedtos.CreateTicketDTO;
+import com.IBMIntenship.backend.model.ticketservicedtos.StatusUpdateDTO;
 import com.IBMIntenship.backend.model.ticketservicedtos.TicketDTO;
 import com.IBMIntenship.backend.model.ticketservicedtos.UpdateTicketDTO;
+import jdk.jshell.Snippet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static java.lang.Boolean.TRUE;
 
 @Service
     public class TicketService {
@@ -123,6 +128,7 @@ import java.util.stream.Collectors;
 
 
 
+
             if (technician == null) {
                 logger.error("No technician found with email: {}", email);
                 throw new RuntimeException("Technician not found");
@@ -144,8 +150,7 @@ import java.util.stream.Collectors;
 
         } else {
             logger.error("Access denied for getTicketsByUserEmail - user does not have a valid role");
-            throw new RuntimeException("Access denied");
-        }
+            throw new UnauthorizedAccessException("Unauthorized access: Missing or invalid token or You Don't have the Required ROle");        }
     }
 
 
@@ -171,6 +176,32 @@ import java.util.stream.Collectors;
 
             ticketServiceClient.deleteTicket(id);
         }
+
+        public TicketDTO updateStatus(Long ticketId, StatusUpdateDTO statusUpdate ) {
+
+
+            if (securityServiceye.validateTokenAndRole("ROLE_ADMIN")) {
+                StatusUpdateDTO statusUpdateDTO = new StatusUpdateDTO();
+                statusUpdateDTO.setAdmin(true);
+                statusUpdateDTO.setStatus(statusUpdate.getStatus());
+                statusUpdateDTO.setStatusUpdatedBy(statusUpdate.getStatusUpdatedBy());
+                logger.debug("UPdating status by admin  is : {}" ,statusUpdateDTO);
+
+                return    ticketServiceClient.updateTicketStatus(ticketId,statusUpdate);
+            }else if (securityServiceye.validateTokenAndRole("ROLE_TECHNICIAN")){
+
+                Long technicianGroupId = authServiceClient.getTechnicianByEmail(statusUpdate.getStatusUpdatedBy()).getGroupId();
+                logger.debug("technicianGroupId is : {}" ,technicianGroupId);
+
+
+                statusUpdate.setTechnicianGroupId(technicianGroupId);
+                logger.debug("UPdating status by admin  is : {}",statusUpdate);
+                return ticketServiceClient.updateTicketStatus(ticketId,statusUpdate);
+            }
+            else throw new  RuntimeException("you dont have permission to access this endpoint");
+        }
+
+
     }
 
 

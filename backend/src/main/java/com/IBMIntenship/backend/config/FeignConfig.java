@@ -1,5 +1,7 @@
 package com.IBMIntenship.backend.config;
 
+import com.IBMIntenship.backend.CustomErrorDecoder;
+import feign.codec.ErrorDecoder;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.HttpServletRequest;
@@ -79,12 +81,16 @@ public class FeignConfig {
     Logger.Level feignLoggerLevel() {
         return Logger.Level.FULL;
     }
+//    @Bean
+//    public Encoder feignFormEncoder() {
+//        return new SpringFormEncoder(new SpringEncoder(() -> {
+//            List<HttpMessageConverter<?>> converters = new ArrayList<>();
+//            converters.add(new MappingJackson2HttpMessageConverter());
+//            return new HttpMessageConverters(converters);
+//        }));
+//    }
     @Bean
-    public Encoder feignFormEncoder() {
-        return new SpringFormEncoder(new SpringEncoder(() -> {
-            List<HttpMessageConverter<?>> converters = new ArrayList<>();
-            converters.add(new MappingJackson2HttpMessageConverter());
-            return new HttpMessageConverters(converters);
-        }));
+    public ErrorDecoder errorDecoder() {
+        return new CustomErrorDecoder();
     }
 }

@@ -8,17 +8,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/ticket/assignment")
+@RequestMapping("/api/tickets/assignment")
 public class TicketAssignmentController {
 
     @Autowired
     private TicketAssignmentService ticketAssignmentService;
 
-    @PostMapping("/assignToUser/{ticketId}/{userId}")
+    @PutMapping("/assignToUser/{ticketId}/{userEmail}")
     public ResponseEntity<TicketDTO> assignTicketToUser(
             @PathVariable Long ticketId,
-            @PathVariable Long userId) {
-        TicketDTO updatedTicket = ticketAssignmentService.assignTicketToUser(ticketId, userId);
+            @PathVariable String userEmail) {
+        TicketDTO updatedTicket = ticketAssignmentService.assignTicketToUser(ticketId, userEmail);
         return ResponseEntity.ok(updatedTicket);
     }
 

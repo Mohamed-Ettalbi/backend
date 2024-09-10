@@ -40,19 +40,19 @@ public class AuthService {
     }
 
     public ResponseEntity<AuthResponse> register(UserDTO userDTO) {
-        try {
+//        try {
                  logger.info("Attempting to register user with email: {}", userDTO.getEmail());
             AuthResponse response = authServiceClient.register(userDTO);
                  logger.info("Successfully registered user with email: {}", userDTO.getEmail());
 
             return ResponseEntity.ok(response);
 
-        } catch (FeignException.Conflict e) {
-                 logger.error("Conflict error during registration for email: {}", userDTO.getEmail(), e);
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
-        } catch (FeignException e) {
-                 logger.error("Error during registration for email: {}", userDTO.getEmail(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+//        } catch (FeignException.Conflict e) {
+//                 logger.error("Conflict error during registration for email: {}", userDTO.getEmail(), e);
+//            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+//        } catch (FeignException e) {
+//                 logger.error("Error during registration for email: {}", userDTO.getEmail(), e);
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+//        }
     }
 }

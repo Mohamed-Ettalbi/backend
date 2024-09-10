@@ -3,6 +3,7 @@ package com.IBMIntenship.backend.controller.ticketcontrollers;
 
 import com.IBMIntenship.backend.feign.TicketServiceClient;
 import com.IBMIntenship.backend.model.ticketservicedtos.CreateTicketDTO;
+import com.IBMIntenship.backend.model.ticketservicedtos.StatusUpdateDTO;
 import com.IBMIntenship.backend.model.ticketservicedtos.TicketDTO;
 import com.IBMIntenship.backend.model.ticketservicedtos.UpdateTicketDTO;
 import com.IBMIntenship.backend.service.ticketservices.TicketService;
@@ -30,6 +31,12 @@ public class TicketController {
         TicketDTO updatedTicket = ticketService.updateTicketWithValidation(id, updateTicketDTO);
         return ResponseEntity.ok(updatedTicket);
     }
+    @PutMapping("/updateStatus/{ticketId}")
+    public ResponseEntity<Void> updateTicketStatus(@PathVariable Long ticketId, @RequestBody StatusUpdateDTO statusUpdateDTO) {
+        ticketService.updateStatus(ticketId, statusUpdateDTO);
+        return ResponseEntity.ok().build();
+    }
+
 
     @GetMapping("/all")
     public ResponseEntity<List<TicketDTO>> getAllTickets(@RequestParam(value = "email", required = false) String email) {

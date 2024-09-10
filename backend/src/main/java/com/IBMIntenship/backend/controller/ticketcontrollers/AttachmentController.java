@@ -42,4 +42,5 @@ public class AttachmentController {
     public ResponseEntity<Resource> downloadFile(@PathVariable("attachmentId") Long attachmentId) {
         return attachmentService.downloadAttachment(attachmentId);
     }
+
 }

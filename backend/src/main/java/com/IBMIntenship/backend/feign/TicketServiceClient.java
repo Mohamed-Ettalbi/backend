@@ -20,8 +20,8 @@ public interface TicketServiceClient {
         @PutMapping("/tickets/{ticketId}/unassign")
         TicketDTO unassignTicket(@PathVariable("ticketId") Long ticketId);
 
-        @PutMapping("/tickets/{ticketId}/assign/user/{userId}")
-        TicketDTO assignTicketToUser(@PathVariable("ticketId") Long ticketId, @PathVariable("userId") Long userId);
+        @PutMapping("/tickets/{ticketId}/assign/user/{userEmail}/{technicianGroupId}")
+        TicketDTO assignTicketToUser(@PathVariable("ticketId") Long ticketId, @PathVariable("userEmail") String userEmail , @PathVariable("technicianGroupId") Long technicianGroupId);
 
         @PutMapping("/tickets/{ticketId}/assign/group/{groupId}")
         TicketDTO assignTicketToGroup(@PathVariable("ticketId") Long ticketId, @PathVariable("groupId") Long groupId);
@@ -29,6 +29,9 @@ public interface TicketServiceClient {
     // Ticket Controller Methods
         @PutMapping("/tickets/update/{id}")
         TicketDTO updateTicket(@PathVariable("id") Long id, @RequestBody UpdateTicketDTO updateTicketDTO);
+
+        @PutMapping("/tickets/updateStatus/{ticketId}")
+        TicketDTO updateTicketStatus(@PathVariable("ticketId") Long ticketId, @RequestBody StatusUpdateDTO statusUpdateDTO);
 
         @GetMapping("/tickets")
         List<TicketDTO> getAllTickets();
@@ -47,13 +50,16 @@ public interface TicketServiceClient {
         CommentDTO updateComment(@PathVariable("commentId") Long commentId, @RequestBody String message);
 
         @PostMapping("/comments/{ticketId}")
-        CommentDTO addCommentToTicket(@PathVariable("ticketId") Long ticketId, @RequestBody String message);
+        CommentDTO addCommentToTicket(@PathVariable("ticketId") Long ticketId, @RequestBody CommentDTO commentDTO );
 
         @GetMapping("/comments/{ticketId}")
         List<CommentDTO> getCommentsForTicket(@PathVariable("ticketId") Long ticketId);
 
         @DeleteMapping("/comments/delete/{commentId}")
         void deleteComment(@PathVariable("commentId") Long commentId);
+
+        @DeleteMapping("/comments/delete/{commentId}")
+        void deleteComment(@PathVariable("commentId") Long commentId, @RequestParam("email") String email);
 
     // Attachment Controller Methods
         @PostMapping(value = "/attachment/uploadMultipleFiles/{ticketId}", consumes = "multipart/form-data")

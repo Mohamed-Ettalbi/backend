@@ -10,7 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import com.IBMIntenship.backend.exceptions.InvalidTokenException;
+import com.IBMIntenship.backend.exceptions.InsufficientRoleException;
+import com.IBMIntenship.backend.exceptions.UnauthorizedAccessException;
 import java.util.List;
 
 @Service
@@ -27,7 +29,8 @@ public class SecurityService {
         String token = feignConfig.getJwtToken();
         if (token == null || !validateToken(token)) {
             logger.error("Invalid or expired token");
-            throw new RuntimeException("Invalid or expired token");
+           return false;
+
         }
 
         UserDetailsFromToken userDetails = getUserDetailsFromToken(token);
@@ -38,14 +41,14 @@ public class SecurityService {
         return true;
     }
 
-    public String getEmailFromToken() {
-        String token = feignConfig.getJwtToken();
-        if (token != null && validateToken(token)) {
-            UserDetailsFromToken userDetails = getUserDetailsFromToken(token);
-            return userDetails.getEmail();
-        }
-        throw new RuntimeException("Invalid or expired token");
-    }
+//    public String getEmailFromToken() {
+//        String token = feignConfig.getJwtToken();
+//        if (token != null && validateToken(token)) {
+//            UserDetailsFromToken userDetails = getUserDetailsFromToken(token);
+//            return userDetails.getEmail();
+//        }
+//        throw new InvalidTokenException("Invalid or expired token");
+//    }
 
     public UserDetailsFromToken getUserDetailsFromToken(String token) {
         try {
@@ -59,21 +62,25 @@ public class SecurityService {
 
             return new UserDetailsFromToken(email, roles);
         } catch (Exception e) {
-            // Handle any exceptions that may occur while parsing the token
-            return null;
+            logger.error("Error parsing token", e);
+
+            throw new InvalidTokenException("Invalid token format");
+
         }
     }
 
     public boolean validateToken(String token) {
         try {
             Jwts.parser()
-                    .setSigningKey(SECRET_KEY) // Set the secret key used for signing
-                    .parseClaimsJws(token); // Parse the token and validate its signature
+                    .setSigningKey(SECRET_KEY)
+                    .parseClaimsJws(token);
 
-            return true; // If no exceptions are thrown, the token is valid
+            return true;
         } catch (JwtException | IllegalArgumentException e) {
-            // Log the error or handle it appropriately
-            return false; // The token is invalid
+            logger.error("Error parsing token", e);
+
+
+            return false;
         }
     }
 }
