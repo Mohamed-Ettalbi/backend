@@ -25,6 +25,12 @@ public class GroupController {
         return  groupService.addGroup(group);
 
     }
+    @PutMapping("/update/{id}")
+    public ResponseEntity<GroupDTO> updateGroupInfo(@PathVariable Long id, @RequestBody AddGroupDTORequest groupUpdateRequest) {
+        GroupDTO updatedGroup = groupService.updateGroupInfo(id, groupUpdateRequest);
+        return ResponseEntity.ok(updatedGroup);
+    }
+
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteGroup(@PathVariable Long id) {

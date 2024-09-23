@@ -4,6 +4,7 @@ import com.IBMIntenship.backend.model.ticketservicedtos.AttachmentDTO;
 import com.IBMIntenship.backend.service.ticketservices.AttachmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -42,5 +43,24 @@ public class AttachmentController {
     public ResponseEntity<Resource> downloadFile(@PathVariable("attachmentId") Long attachmentId) {
         return attachmentService.downloadAttachment(attachmentId);
     }
+
+    // In AttachmentController in the gateway
+    @GetMapping("/attachments/{ticketId}")
+    public ResponseEntity<List<AttachmentDTO>> getAttachmentsByTicketId(@PathVariable Long ticketId) {
+        try {
+            List<AttachmentDTO> attachments = attachmentService.getAttachmentsByTicketId(ticketId);
+            return ResponseEntity.ok(attachments);
+        } catch (Exception e) {
+            logger.error("Failed to fetch attachments for ticketId: {}", ticketId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @DeleteMapping("/delete/{attachmentId}")
+    public ResponseEntity<Void> deleteAttachmentById(@PathVariable Long attachmentId) {
+        attachmentService.deleteAttachmentById(attachmentId);
+        return ResponseEntity.noContent().build();
+    }
+
 
 }

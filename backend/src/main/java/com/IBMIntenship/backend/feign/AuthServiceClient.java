@@ -12,10 +12,10 @@ public interface AuthServiceClient {
 
     // User-related endpoints
             @GetMapping("/api/user/{id}")
-            UserDTO getUserById(@PathVariable Long id);
+            UserDTOResponse getUserById(@PathVariable Long id);
 
             @PutMapping("/api/user/{id}")
-            UserDTO updateUser(@PathVariable Long id, @RequestBody UserDTO userDTO);
+            UserDTOResponse updateUser(@PathVariable Long id, @RequestBody UserDTO userDTO);
 
             @DeleteMapping("/api/user/{id}")
             void deleteUser(@PathVariable Long id);
@@ -24,7 +24,7 @@ public interface AuthServiceClient {
             //    UserDTO addUser(@RequestBody UserDTO userDTO);
 
             @GetMapping("/api/user/all")
-            List<UserDTO> getAllUsers();
+            List<UserDTOResponse> getAllUsers();
 
 
    // Group-related endpoints
@@ -32,7 +32,7 @@ public interface AuthServiceClient {
             GroupDTO getGroupById(@PathVariable Long id);
 
             @PutMapping("/api/group/{id}")
-            void updateGroup(@PathVariable Long id, @RequestBody GroupDTO groupDTO);
+            GroupDTO updateGroup(@PathVariable Long id, @RequestBody AddGroupDTORequest groupDTO);
 
             @DeleteMapping("/api/group/{id}")
             void deleteGroup(@PathVariable Long id);
@@ -52,10 +52,10 @@ public interface AuthServiceClient {
             TechnicianDTOResponse addTechnicianToGroup(@PathVariable Long groupId, @PathVariable Long technicianId);
 
             @PutMapping("/api/admin/disable/{id}")
-            UserDTO disableUser(@PathVariable Long id);
+            UserDTOResponse disableUser(@PathVariable Long id);
 
             @PutMapping("/api/admin/approve/{id}")
-            UserDTO approveUser(@PathVariable Long id);
+            UserDTOResponse approveUser(@PathVariable Long id);
 
 
 
@@ -63,6 +63,9 @@ public interface AuthServiceClient {
     // Technician-related endpoints
             @PostMapping("/api/technician/add")
             TechnicianDTOResponse addTechnician(@RequestBody UserDTO technicianDTO);
+
+            @PutMapping("/api/technician/removefromgrup/{technicianId}")
+            Void removeTechnicianFromGroup(@PathVariable("technicianId") Long technicianId);
 
             @GetMapping("/api/technician/all")
             List<TechnicianDTOResponse> getAllTechnicians();
@@ -74,10 +77,10 @@ public interface AuthServiceClient {
 
     // Employee-related endpoints
             @PostMapping("/api/employee/add")
-            UserDTO addEmployee(@RequestBody UserDTO employeeDTO);
+            UserDTOResponse addEmployee(@RequestBody UserDTO employeeDTO);
 
             @GetMapping("/api/employee/all")
-            List<UserDTO> getAllEmployees();
+            List<UserDTOResponse> getAllEmployees();
 
     // Auth-related endpoints
             @PostMapping("/api/auth/register")

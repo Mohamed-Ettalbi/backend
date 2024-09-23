@@ -79,7 +79,7 @@ public class CommentService {
     public void deleteComment(Long commentId) {
         if (securityServiceye.validateTokenAndRole("ROLE_ADMIN")) {
 
-            ticketServiceClient.deleteComment(commentId);
+            ticketServiceClient.deleteCommentNoEmail(commentId);
         } else {
             String token = feignConfig.getJwtToken();
             String authorEmail = securityServiceye.getUserDetailsFromToken(token).getEmail();

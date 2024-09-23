@@ -51,4 +51,17 @@ public class AttachmentService {
         // Forward the request to the attachment-service via Feign
         return ticketServiceClient.downloadFile(attachmentId);
     }
+
+    // In AttachmentService in the gateway
+    public List<AttachmentDTO> getAttachmentsByTicketId(Long ticketId) {
+        return ticketServiceClient.getAttachmentsByTicketId(ticketId);
+    }
+
+    public void deleteAttachmentById(Long attachmentId){
+        ticketServiceClient.deleteAttachmentById(attachmentId);
+    }
+
+
+
+
 }

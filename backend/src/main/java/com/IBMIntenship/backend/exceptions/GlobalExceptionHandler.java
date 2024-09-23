@@ -35,5 +35,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleUnauthorizedAccessException(UnauthorizedAccessException ex) {
         return new ResponseEntity<>("Unauthorized Access: " + ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
+    @ExceptionHandler(GroupIdNullException.class)
+    public ResponseEntity<String> handleUnauthorizedAccessException(GroupIdNullException ex) {
+        return new ResponseEntity<>("Group Id Is Null : " + ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
 }
 

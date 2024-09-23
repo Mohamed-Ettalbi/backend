@@ -44,13 +44,24 @@ import static java.lang.Boolean.TRUE;
 
 
     public TicketDTO updateTicketWithValidation(Long id, UpdateTicketDTO updateTicketDTO) {
+        logger.debug("Checking role for ROLE_ADMIN");
+        if (securityServiceye.validateTokenAndRole("ROLE_ADMIN")) {
+            updateTicketDTO.setTicketOwnerEmail("admin@gmail.com");
 
-            // Forward the request to the Feign client
-          Boolean isValidated = securityServiceye.validateTokenAndRole("ROLE_EMPLOYEE");
-           if (isValidated) {
+            return ticketServiceClient.updateTicket(id, updateTicketDTO);
+        }else if ( securityServiceye.validateTokenAndRole("ROLE_EMPLOYEE")){
+            String token = feignConfig.getJwtToken();
+            logger.debug("token is there {}" , token );
+            String ownerEmail = securityServiceye.getUserDetailsFromToken(token).getEmail();
+            logger.debug("ownerEmail is there {}" , ownerEmail );
+
+            updateTicketDTO.setTicketOwnerEmail(ownerEmail);
             return ticketServiceClient.updateTicket(id, updateTicketDTO);
         }
-    else throw new  RuntimeException("you dont have permission to access this endpoint");
+
+
+
+    else throw new UnauthorizedAccessException("Unauthorized access");
         }
 
 //        public List<TicketDTO> getAllTickets() {
@@ -105,7 +116,7 @@ import static java.lang.Boolean.TRUE;
             return tickets;
         } else {
             logger.error("Access denied for getAllTickets - user is not an admin");
-            throw new RuntimeException("Access denied");
+            throw new UnauthorizedAccessException("Access denied for getAllTickets - user is not an admin");
         }
     }
 
@@ -126,12 +137,9 @@ import static java.lang.Boolean.TRUE;
             List<TicketDTO> tickets = ticketServiceClient.getAllTickets();
             TechnicianDTOResponse technician = authServiceClient.getTechnicianByEmail(email);
 
-
-
-
             if (technician == null) {
                 logger.error("No technician found with email: {}", email);
-                throw new RuntimeException("Technician not found");
+                throw new UnauthorizedAccessException("No technician found with email: " + email);
             }
             Long groupId = technician.getGroupId();
 
@@ -148,7 +156,14 @@ import static java.lang.Boolean.TRUE;
             return filteredTickets;
 
 
-        } else {
+        } else if (securityServiceye.validateTokenAndRole("ROLE_ADMIN")) {
+            logger.debug("Role validated for ROLE_ADMIN, fetching all tickets.");
+            List<TicketDTO> tickets = ticketServiceClient.getAllTickets();
+            logger.debug("Fetched {} tickets.", tickets.size());
+            return tickets;
+
+
+    }{
             logger.error("Access denied for getTicketsByUserEmail - user does not have a valid role");
             throw new UnauthorizedAccessException("Unauthorized access: Missing or invalid token or You Don't have the Required ROle");        }
     }
@@ -167,9 +182,45 @@ import static java.lang.Boolean.TRUE;
         public TicketDTO getTicketById(Long id) {
             TicketDTO ticket = ticketServiceClient.getTicketById(id);
             if (ticket == null) {
-                throw new RuntimeException("Ticket not found");
+                throw new UnauthorizedAccessException("Access denied for getTicketById");
             }
-            return ticket;
+
+            String token = feignConfig.getJwtToken();
+            String email = securityServiceye.getUserDetailsFromToken(token).getEmail();
+
+            // Check role-based access
+            if (securityServiceye.validateTokenAndRole("ROLE_ADMIN")) {
+                logger.debug("User has ROLE_ADMIN, granting access to the ticket.");
+                return ticket;
+            } else if (securityServiceye.validateTokenAndRole("ROLE_EMPLOYEE")) {
+                // Check if the ticket was created by the employee
+                if (ticket.getCreatedBy().equals(email)) {
+                    logger.debug("User has ROLE_EMPLOYEE, and ticket was created by them. Granting access.");
+                    return ticket;
+                } else {
+                    logger.error("Access denied: Employee does not have permission to view ticket ID: {}", id);
+                    throw new UnauthorizedAccessException("Access denied: You do not have permission to view this ticket.");
+                }
+            }else if (securityServiceye.validateTokenAndRole("ROLE_TECHNICIAN")) {
+                // Check if the ticket is assigned to the technician's group
+                TechnicianDTOResponse technician = authServiceClient.getTechnicianByEmail(email);
+                if (technician == null || technician.getGroupId() == null) {
+                    logger.error("Access denied: No technician or group found for email: {}", email);
+                    throw new UnauthorizedAccessException("Access denied: No technician or group found for email: " + email);
+                }
+
+                Long groupId = technician.getGroupId();
+                if (ticket.getAssignedGroup() != null && ticket.getAssignedGroup().equals(groupId)) {
+                    logger.debug("User has ROLE_TECHNICIAN, and ticket is assigned to their group. Granting access.");
+                    return ticket;
+                } else {
+                    logger.error("Access denied: Technician does not have permission to view ticket ID: {}", id);
+                    throw new UnauthorizedAccessException("Access denied: You do not have permission to view this ticket.");
+                }
+            } else {
+                logger.error("Access denied: User does not have a valid role to view ticket ID: {}", id);
+                throw new UnauthorizedAccessException("Access denied: You do not have the required role to view this ticket.");
+            }
         }
 
         public void deleteTicket(Long id) {
@@ -187,18 +238,21 @@ import static java.lang.Boolean.TRUE;
                 statusUpdateDTO.setStatusUpdatedBy(statusUpdate.getStatusUpdatedBy());
                 logger.debug("UPdating status by admin  is : {}" ,statusUpdateDTO);
 
-                return    ticketServiceClient.updateTicketStatus(ticketId,statusUpdate);
+                return    ticketServiceClient.updateTicketStatus(ticketId,statusUpdateDTO);
             }else if (securityServiceye.validateTokenAndRole("ROLE_TECHNICIAN")){
 
                 Long technicianGroupId = authServiceClient.getTechnicianByEmail(statusUpdate.getStatusUpdatedBy()).getGroupId();
                 logger.debug("technicianGroupId is : {}" ,technicianGroupId);
-
+                StatusUpdateDTO statusUpdateDTO = new StatusUpdateDTO();
+                statusUpdateDTO.setAdmin(false);
+                statusUpdateDTO.setStatus(statusUpdate.getStatus());
+                statusUpdateDTO.setStatusUpdatedBy(statusUpdate.getStatusUpdatedBy());
 
                 statusUpdate.setTechnicianGroupId(technicianGroupId);
-                logger.debug("UPdating status by admin  is : {}",statusUpdate);
+                logger.debug("UPdating status by Non admin   Content : {}",statusUpdate.getStatusUpdatedBy());
                 return ticketServiceClient.updateTicketStatus(ticketId,statusUpdate);
             }
-            else throw new  RuntimeException("you dont have permission to access this endpoint");
+            else throw new UnauthorizedAccessException("Access denied for getTicketById");
         }
 
 

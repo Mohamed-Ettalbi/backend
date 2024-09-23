@@ -12,7 +12,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDTO {
+public class UserDTOResponse {
+
+    private Long id;
 
 
     @NotBlank(message = "first name can not be blank")

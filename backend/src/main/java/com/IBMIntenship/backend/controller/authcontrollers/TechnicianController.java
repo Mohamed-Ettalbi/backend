@@ -21,4 +21,13 @@ public class TechnicianController {
         List<TechnicianDTOResponse> technicians = technicianService.getAllTechnicians();
         return ResponseEntity.ok(technicians);
     }
+
+
+    @PutMapping("/removefromgroup/{technicianId}")
+    public ResponseEntity<Void> removeTechnicianFromGroup(@PathVariable Long technicianId) {
+        technicianService.removeTechnicianFromGroup(technicianId);
+        return ResponseEntity.ok().build();
+    }
+
+
 }

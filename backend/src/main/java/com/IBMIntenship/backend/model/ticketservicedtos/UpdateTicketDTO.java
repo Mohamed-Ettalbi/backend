@@ -14,6 +14,7 @@ public class UpdateTicketDTO {
     private String description;
     private TicketPriorityEnum priority;
     private Long TicketCategory;
+    private String ticketOwnerEmail;
 
 
     // Getters and Setters

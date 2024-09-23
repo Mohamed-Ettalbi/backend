@@ -2,6 +2,7 @@ package com.IBMIntenship.backend.controller.authcontrollers;
 
 import com.IBMIntenship.backend.feign.AuthServiceClient;
 import com.IBMIntenship.backend.model.authservicedtos.UserDTO;
+import com.IBMIntenship.backend.model.authservicedtos.UserDTOResponse;
 import com.IBMIntenship.backend.service.authservices.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,15 +24,15 @@ public class AdminController {
 
     // Approve a user by ID
     @PutMapping("/approve/{id}")
-    public ResponseEntity<UserDTO> approveUser(@PathVariable Long id) {
-        UserDTO userDTO = adminService.approveUser(id);
+    public ResponseEntity<UserDTOResponse> approveUser(@PathVariable Long id) {
+        UserDTOResponse userDTO = adminService.approveUser(id);
         return new ResponseEntity<>(userDTO,HttpStatus.OK);
     }
 
     // Disable a user by ID
     @PutMapping("/disable/{id}")
-    public ResponseEntity<UserDTO> disableUser(@PathVariable Long id) {
-        UserDTO userDTO = adminService.disableUser(id);
+    public ResponseEntity<UserDTOResponse> disableUser(@PathVariable Long id) {
+        UserDTOResponse userDTO = adminService.disableUser(id);
         return new ResponseEntity<>(userDTO,HttpStatus.OK);
     }
 

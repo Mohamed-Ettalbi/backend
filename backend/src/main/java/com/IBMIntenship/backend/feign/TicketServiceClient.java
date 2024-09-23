@@ -56,7 +56,7 @@ public interface TicketServiceClient {
         List<CommentDTO> getCommentsForTicket(@PathVariable("ticketId") Long ticketId);
 
         @DeleteMapping("/comments/delete/{commentId}")
-        void deleteComment(@PathVariable("commentId") Long commentId);
+        void deleteCommentNoEmail(@PathVariable("commentId") Long commentId);
 
         @DeleteMapping("/comments/delete/{commentId}")
         void deleteComment(@PathVariable("commentId") Long commentId, @RequestParam("email") String email);
@@ -69,7 +69,14 @@ public interface TicketServiceClient {
         @PostMapping(value = "/attachment/uploadFile/{ticketId}", consumes = "multipart/form-data")
         AttachmentDTO uploadFile(@RequestPart("file") MultipartFile file, @PathVariable("ticketId") Long ticketId);
 
-        @GetMapping("/attachment/downloadAttachment/{attachmentId}")
+    @GetMapping("/attachment/downloadAttachment/{attachmentId}")
         ResponseEntity<Resource> downloadFile(@PathVariable("attachmentId") Long attachmentId);
-    }
+
+
+    @GetMapping("/attachment/attachments/{ticketId}")
+    List<AttachmentDTO> getAttachmentsByTicketId(@PathVariable("ticketId") Long ticketId);
+
+    @DeleteMapping("/attachment/attachments/delete/{attachmentId}")
+    ResponseEntity<Void> deleteAttachmentById(@PathVariable("attachmentId") Long attachmentId);
+}
 

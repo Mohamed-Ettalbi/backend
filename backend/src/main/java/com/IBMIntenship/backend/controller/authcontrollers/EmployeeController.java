@@ -1,6 +1,7 @@
 package com.IBMIntenship.backend.controller.authcontrollers;
 
 import com.IBMIntenship.backend.model.authservicedtos.UserDTO;
+import com.IBMIntenship.backend.model.authservicedtos.UserDTOResponse;
 import com.IBMIntenship.backend.service.authservices.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +19,8 @@ public class EmployeeController {
 
 
     @GetMapping("/all")
-    public ResponseEntity<List<UserDTO>> getAllEmployees() {
-        List<UserDTO> employees = employeeService.getAllEmployees();
+    public ResponseEntity<List<UserDTOResponse>> getAllEmployees() {
+        List<UserDTOResponse> employees = employeeService.getAllEmployees();
         return ResponseEntity.ok(employees);
     }
 }
