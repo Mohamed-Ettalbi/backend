@@ -13,6 +13,5 @@ public class AuthResponse {
         private Object user;  // Can hold either TechnicianDTOResponse or UserDTO
 
 
-        // Getters and setters
 
 }

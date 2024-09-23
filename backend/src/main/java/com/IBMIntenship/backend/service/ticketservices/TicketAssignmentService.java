@@ -32,8 +32,10 @@ public class TicketAssignmentService {
 
         if (securityServiceye.validateTokenAndRole("ROLE_TECHNICIAN")) {
 
+
             if (authServiceClient.getTechnicianByEmail(userEmail).getGroupId() != null) {
                 Long technicianGroupId = authServiceClient.getTechnicianByEmail(userEmail).getGroupId();
+
                 return ticketServiceClient.assignTicketToUser(ticketId, userEmail, technicianGroupId);
             } else {
                 throw new GroupIdNullException("group id is null");

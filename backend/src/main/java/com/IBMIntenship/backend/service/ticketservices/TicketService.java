@@ -157,10 +157,26 @@ import static java.lang.Boolean.TRUE;
 
 
         } else if (securityServiceye.validateTokenAndRole("ROLE_ADMIN")) {
-            logger.debug("Role validated for ROLE_ADMIN, fetching all tickets.");
             List<TicketDTO> tickets = ticketServiceClient.getAllTickets();
-            logger.debug("Fetched {} tickets.", tickets.size());
-            return tickets;
+            TechnicianDTOResponse technician = authServiceClient.getTechnicianByEmail(email);
+
+            if (technician == null) {
+                logger.error("No technician found with email: {}", email);
+                throw new UnauthorizedAccessException("No technician found with email: " + email);
+            }
+            Long groupId = technician.getGroupId();
+
+            List<TicketDTO> filteredTickets = tickets.stream()
+                    .filter(ticket -> ticket.getAssignedGroup() != null && ticket.getAssignedGroup().equals(groupId))
+                    .collect(Collectors.toList());
+
+            if (filteredTickets.isEmpty()) {
+                logger.debug("No tickets found for technician group ID {}", groupId);
+            } else {
+                logger.debug("Filtered down to {} tickets for technician group ID {}", filteredTickets.size(), groupId);
+            }
+
+            return filteredTickets;
 
 
     }{
@@ -223,10 +239,7 @@ import static java.lang.Boolean.TRUE;
             }
         }
 
-        public void deleteTicket(Long id) {
 
-            ticketServiceClient.deleteTicket(id);
-        }
 
         public TicketDTO updateStatus(Long ticketId, StatusUpdateDTO statusUpdate ) {
 
@@ -256,7 +269,40 @@ import static java.lang.Boolean.TRUE;
         }
 
 
+
+
+
+
+
+    public void deleteTicket(Long id) {
+        TicketDTO ticket = ticketServiceClient.getTicketById(id);
+        if (ticket == null) {
+            throw new UnauthorizedAccessException("Ticket not found or access denied.");
+        }
+
+        String token = feignConfig.getJwtToken();
+        String email = securityServiceye.getUserDetailsFromToken(token).getEmail();
+
+        if (securityServiceye.validateTokenAndRole("ROLE_ADMIN")) {
+            logger.debug("Admin user {} is deleting ticket with ID: {}", email, id);
+            ticketServiceClient.deleteTicket(id);
+            logger.info("Ticket ID {} deleted successfully by admin {}", id, email);
+        } else if (securityServiceye.validateTokenAndRole("ROLE_EMPLOYEE")) {
+            if (ticket.getCreatedBy().equals(email)) {
+                logger.debug("Employee {} is deleting their own ticket with ID: {}", email, id);
+                ticketServiceClient.deleteTicket(id);
+                logger.info("Ticket ID {} deleted successfully by employee {}", id, email);
+            } else {
+                logger.error("Access denied: Employee {} does not have permission to delete ticket ID {}", email, id);
+                throw new UnauthorizedAccessException("Access denied: You do not have permission to delete this ticket.");
+            }
+        } else {
+            logger.error("Access denied: User {} does not have the required role to delete ticket ID {}", email, id);
+            throw new UnauthorizedAccessException("Access denied: You do not have the required role to delete this ticket.");
+        }
     }
+
+}
 
 
 
